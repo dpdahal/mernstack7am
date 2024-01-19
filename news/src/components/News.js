@@ -1,7 +1,27 @@
 import { Link } from "react-router-dom";
+import React,{useEffect,useState} from "react";
 import Menu from "./Menu";
 import Footer from "./Footer";
+import apiUrl from '../config/apiUrl';
 function News(){
+    const [news, setNews] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const getNews = ()=>{
+        apiUrl.get("/news").then((response)=>{            
+                setNews(response.data);
+                setLoading(false);            
+        }).catch((err)=>{
+            console.log(err);
+        })
+
+    }
+
+  useEffect(() => {
+    getNews();
+    }, [])
+
+
     return (
         <div className="container">
             <Menu/>
@@ -12,72 +32,23 @@ function News(){
             </div>
 
             <div className="row">
-                <div className="col-md-3">
-                    <div className="card">
-                        <img src="https://picsum.photos/200/100" className="card-img-top" alt="..." />
-                        <div className="card-body">
-                            <h5 className="card-title">News Title</h5>
-                            <p className="card-text">News Description</p>
-                            <Link to="/news-details/1" className="btn btn-primary">Read More</Link>
+                {loading ? <div className="col-md-12">Loading...</div>
+                 : news && news.map((item,index)=>{
+                    return (
+                        <div key={index} className="col-md-3">
+                            <div className="card">
+                                <img src={item.image} className="card-img-top" alt="..." />
+                                <div className="card-body">
+                                    <h5 className="card-title">{item.title}</h5>
+                                    <p className="card-text">{item.description}</p>
+                                    <Link to={"/news-details/"+item._id} className="btn btn-primary">Read More</Link>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-
-                </div>
-                <div className="col-md-3">
-                    <div className="card">
-                        <img src="https://picsum.photos/200/100" className="card-img-top" alt="..." />
-                        <div className="card-body">
-                            <h5 className="card-title">News Title</h5>
-                            <p className="card-text">News Description</p>
-                            <Link to="/news-details/1" className="btn btn-primary">Read More</Link>
-                        </div>
-                    </div>
-
-                </div>
-                <div className="col-md-3">
-                    <div className="card">
-                        <img src="https://picsum.photos/200/100" className="card-img-top" alt="..." />
-                        <div className="card-body">
-                            <h5 className="card-title">News Title</h5>
-                            <p className="card-text">News Description</p>
-                            <Link to="/news-details/1" className="btn btn-primary">Read More</Link>
-                        </div>
-                    </div>
-
-                </div>
-                <div className="col-md-3">
-                    <div className="card">
-                        <img src="https://picsum.photos/200/100" className="card-img-top" alt="..." />
-                        <div className="card-body">
-                            <h5 className="card-title">News Title</h5>
-                            <p className="card-text">News Description</p>
-                            <Link to="/news-details/1" className="btn btn-primary">Read More</Link>
-                        </div>
-                    </div>
-
-                </div>
-                <div className="col-md-3">
-                    <div className="card">
-                        <img src="https://picsum.photos/200/100" className="card-img-top" alt="..." />
-                        <div className="card-body">
-                            <h5 className="card-title">News Title</h5>
-                            <p className="card-text">News Description</p>
-                            <Link to="/news-details/1" className="btn btn-primary">Read More</Link>
-                        </div>
-                    </div>
-
-                </div>
-                <div className="col-md-3">
-                    <div className="card">
-                        <img src="https://picsum.photos/200/100" className="card-img-top" alt="..." />
-                        <div className="card-body">
-                            <h5 className="card-title">News Title</h5>
-                            <p className="card-text">News Description</p>
-                            <Link to="/news-details/1" className="btn btn-primary">Read More</Link>
-                        </div>
-                    </div>
-
-                </div>
+                    )
+                })
+                }
+               
                 
             </div> 
             <Footer/>           

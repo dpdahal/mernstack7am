@@ -5,8 +5,29 @@ class NewsController{
     async index(req, res){
         try{
             // const news = await News.find({}).populate("category_id");
-            const news = await News.find({});
-            res.status(200).json(news);
+            let newsData = await News.aggregate([
+                {
+                    $lookup:{
+                        from:"categories",
+                        localField:"category_id",
+                        foreignField:"_id",
+                        as:"category"
+                    }
+                },
+                {
+                    $unwind:"$category"
+                }
+            ]);
+
+            newsData = newsData.map((news_res) => {
+                if (news_res.image) {
+                    news_res.image = process.env.BASE_URL + "/uploads/news/" + news_res.image;
+                } else {
+                    news_res.image = process.env.BASE_URL + "/uploads/icons/a.jpg";
+                }
+                return news_res;
+            });  
+          return  res.status(200).json(newsData);
         }catch(err){
             res.send(err);
         }
@@ -14,7 +35,12 @@ class NewsController{
 
     async show(req, res){
         try{
-            const news = await News.findById(req.params.id);
+            const news = await News.findById(req.params.id).populate("category_id");
+            if (news.image) {
+                news.image = process.env.BASE_URL + "/uploads/news/" + news.image;
+            } else {
+                news.image = process.env.BASE_URL + "/uploads/icons/a.jpg";
+            }
             res.status(200).json(news);
         }catch(err){
             res.send(err);
